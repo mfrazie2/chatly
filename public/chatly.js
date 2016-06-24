@@ -19,10 +19,10 @@ $(document).ready(function () {
   $form.submit(function (e) {
     e.preventDefault();
     socket.emit('chat message', $newMessage.val());
-    appendMessage({
+    appendMessage(JSON.stringify({
       message: $newMessage.val(),
       name: nickname
-    });
+    }));
     $newMessage.val('');
     return false;
   });
@@ -31,16 +31,23 @@ $(document).ready(function () {
   socket.on('new user', appendNewUser)
 
   socket.on('chat message', appendMessage);
+  
+  socket.on('bye user', appendByeUser);
   // End Socket Listeners
 
   
   // Helper Functions
-  function appendMessage (messageObj) {
+  function appendMessage (message) {
+    var messageObj = JSON.parse(message);
     $messageList.append($('<li>').text(messageObj.message).prepend($('<p>').text(messageObj.name)));
   }
   
   function appendNewUser (user) {
     $messageList.append($('<li>').text(user + " connected!"));
+  }
+  
+  function appendByeUser (user) {
+    $messageList.append($('<li>').text(user + " has left..."));
   }
 });
   
